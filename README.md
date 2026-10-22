@@ -4,7 +4,7 @@ herdr plugin that opens your repository's changes in [tuicr](https://github.com/
 
 ## Flow
 
-1. The `herdr-earmark.open` action takes the focused pane's directory, resolves the git repository, and opens a new tab (named by `tab_name`) running tuicr.
+1. The `herdr-earmark.open` action takes the focused pane's directory, resolves the git repository, and opens a new tab (named by `tab_name`) running tuicr. The tab is focused in every attached herdr window, local or remote.
 2. The scope comes from read-only git probes:
 
    | Situation                               | tuicr shows                                           |

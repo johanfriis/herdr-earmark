@@ -101,10 +101,16 @@ fn action() -> Result<(), String> {
 /// in the pane until Enter, since the pane closes as soon as this exits.
 fn review_pane() {
     let cfg = Config::load(env("HERDR_PLUGIN_CONFIG_DIR").as_deref().map(Path::new));
-    if let Some(tab) = env("HERDR_TAB_ID")
-        && let Err(e) = herdr::rename_tab(&tab, &cfg.tab_name)
-    {
-        eprintln!("herdr-earmark: {e}");
+    if let Some(tab) = env("HERDR_TAB_ID") {
+        if let Err(e) = herdr::rename_tab(&tab, &cfg.tab_name) {
+            eprintln!("herdr-earmark: {e}");
+        }
+        // `plugin pane open --focus` only moves the server's focus; attached
+        // clients (local or remote) keep their own view until a public
+        // `tab.focus` moves them.
+        if let Err(e) = herdr::focus_tab(&tab) {
+            eprintln!("herdr-earmark: {e}");
+        }
     }
     match review(&cfg) {
         Ok(Outcome::Delivered) | Ok(Outcome::NoComments) => return_to_caller(),
