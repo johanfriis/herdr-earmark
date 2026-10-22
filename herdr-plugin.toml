@@ -1,0 +1,21 @@
+id = "herdr-earmark"
+name = "Earmark"
+version = "0.1.0"
+min_herdr_version = "0.9.5"
+description = "Review repository changes in tuicr in a new tab; on quit, paste the review into the calling agent's input without submitting"
+platforms = ["linux", "macos"]
+
+[[build]]
+command = ["cargo", "build", "--release", "--locked"]
+
+[[actions]]
+id = "open"
+title = "Review changes with tuicr"
+contexts = ["workspace", "pane"]
+command = ["./target/release/herdr-earmark"]
+
+[[panes]]
+id = "review"
+title = "review"
+placement = "tab"
+command = ["./target/release/herdr-earmark"]

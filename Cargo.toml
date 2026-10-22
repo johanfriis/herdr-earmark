@@ -1,0 +1,19 @@
+[package]
+name = "herdr-earmark"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "herdr plugin: review repository changes in tuicr and paste the review into the calling agent's input"
+repository = "https://github.com/johanfriis/herdr-earmark"
+rust-version = "1.88"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+toml = "0.9"
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1
+panic = "abort"
