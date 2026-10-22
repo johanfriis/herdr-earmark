@@ -26,7 +26,9 @@ herdr plugin that opens your repository's changes in [tuicr](https://github.com/
 Requires herdr >= 0.9.5, a Rust toolchain (1.88+, the plugin builds on install), and `tuicr` on herdr's `PATH`.
 
 ```sh
-herdr plugin install johanfriis/herdr-earmark
+herdr plugin install johanfriis/herdr-earmark            # latest main
+herdr plugin install johanfriis/herdr-earmark --ref v0.1.0  # a release tag
+herdr plugin update herdr-earmark                         # refetch the installed ref
 ```
 
 For local development, build and link a checkout instead:
@@ -59,3 +61,13 @@ clear_after_send = true    # clear delivered comments from the tuicr session
 A missing or invalid config falls back to the defaults (invalid files print a warning).
 
 tuicr's own settings (theme, export intro, `session_header`, comment types) live in tuicr's config and apply to the export.
+
+## Releasing
+
+Versions live in both `Cargo.toml` and `herdr-plugin.toml`; CI fails if they differ.
+
+```sh
+make release VERSION=x.y.z
+```
+
+From a clean `main`, this bumps both files and `Cargo.lock`, runs `make check`, commits, tags `vx.y.z`, and pushes. The tag triggers `.github/workflows/release.yml`, which checks that the tag matches both versions, runs CI, and publishes a GitHub release with generated notes. Users get the release with `herdr plugin install ... --ref vx.y.z`; herdr builds it from source.

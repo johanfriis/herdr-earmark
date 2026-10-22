@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions-rust-lang/setup-rust-toolchain@v2
+        with:
+          components: rustfmt, clippy
+      - run: cargo fmt --check
+      - run: cargo clippy --all-targets --locked -- -D warnings
+      - name: Versions in Cargo.toml and herdr-plugin.toml match
+        run: |
+          crate=$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml)
+          plugin=$(sed -n 's/^version = "\(.*\)"/\1/p' herdr-plugin.toml)
+          [ "$crate" = "$plugin" ] || { echo "Cargo.toml $crate != herdr-plugin.toml $plugin"; exit 1; }
+
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        # stable plus the declared rust-version (MSRV); herdr builds the plugin on install.
+        toolchain: [stable, "1.88"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions-rust-lang/setup-rust-toolchain@v2
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - run: cargo test --locked
+      # The exact command herdr runs on `herdr plugin install`.
+      - run: cargo build --release --locked
